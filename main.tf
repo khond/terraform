@@ -115,3 +115,32 @@ resource "aws_nat_gateway" "nat_gateway" {
     Name = "demo_nat_gateway"
   }
 }
+
+# Create EC2 Instance with Amazon Linux 2023
+resource "aws_instance" "amazon_linux_instance" {
+  ami           = data.aws_ami.amazon_linux_2023.id
+  instance_type = "t2.micro"  # or use var.instance_type if you want to make it configurable
+  subnet_id     = aws_subnet.public_subnets["public_subnet_1"].id
+  key_name      = var.key_name  # Ensure you have a key pair for SSH access
+
+  tags = {
+    Name = "demo_amazon_linux_2023"
+  }
+}
+
+# Retrieve the latest Amazon Linux 2023 AMI
+data "aws_ami" "amazon_linux_2023" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  owners = ["amazon"] # Amazon's AMI owner ID
+}
